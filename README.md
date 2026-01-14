@@ -33,8 +33,9 @@ docker pull iltc/calendar-proxy:latest
 
 ```bash
 docker run -p 8000:8000 \
-  -e CALENDAR_URL="your_calendar_url" \
-  -e TOKEN_0="your_token_0" \
+  -e FEED_0_NAME="work" \
+  -e FEED_0_SOURCE_0="https://calendar.example.com/work.ics" \
+  -e FEED_0_TOKEN_0="your_secret_token" \
   iltc/calendar-proxy:latest
 ```
 
@@ -62,7 +63,23 @@ docker buildx build --platform linux/amd64,linux/arm64 \
 | Endpoint | Description |
 |----------|-------------|
 | `GET /` | Health check, returns `{"status": "ok"}` |
-| `GET /{token}.ics` | Returns the filtered calendar if token is valid |
+| `GET /{feed_name}/{token}.ics` | Returns the filtered calendar for the specified feed |
+
+### Example
+
+With this configuration:
+
+```bash
+FEED_0_NAME=work
+FEED_0_SOURCE_0=https://calendar.example.com/work.ics
+FEED_0_TOKEN_0=abc123
+```
+
+Access your filtered calendar at:
+
+```
+http://localhost:8000/work/abc123.ics
+```
 
 ## License
 
