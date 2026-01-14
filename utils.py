@@ -5,7 +5,7 @@ import icalendar
 import requests
 import requests_cache
 
-requests_cache.install_cache('calendar_cache', expire_after=900)
+requests_cache.install_cache('calendar_cache', expire_after=300)
 
 def get_tokens() -> list[str]:
     results = []
