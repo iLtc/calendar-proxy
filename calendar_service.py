@@ -2,8 +2,9 @@ import icalendar
 import requests
 import requests_cache
 
-# Cache calendar fetches for 5 minutes
-requests_cache.install_cache('calendar_cache', expire_after=300)
+# Cache calendar fetches for 5 minutes; serve the last good copy if an
+# upstream is down when the cached entry has expired
+requests_cache.install_cache('calendar_cache', expire_after=300, stale_if_error=True)
 
 
 def fetch_calendar(url: str) -> icalendar.Calendar:
@@ -16,7 +17,7 @@ def fetch_calendar(url: str) -> icalendar.Calendar:
     Returns:
         Parsed calendar object
     """
-    response = requests.get(url)
+    response = requests.get(url, timeout=10)
     response.raise_for_status()
     return icalendar.Calendar.from_ical(response.text)
 

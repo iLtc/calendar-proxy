@@ -43,6 +43,12 @@ def filter_all_day_events(calendar: icalendar.Calendar) -> icalendar.Calendar:
                 # If we can't compute duration, keep the event
                 pass
 
+        # Events may specify DURATION instead of DTEND
+        duration = item.get("DURATION")
+        if dtstart and not dtend and duration is not None:
+            if isinstance(duration.dt, timedelta) and duration.dt >= timedelta(days=1):
+                continue
+
         items_to_keep.append(item)
 
     calendar.subcomponents = items_to_keep

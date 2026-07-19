@@ -1,3 +1,4 @@
+import requests
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Response
 
@@ -34,7 +35,10 @@ def get_feed_ics(feed_name: str, token: str):
     if not feed:
         raise HTTPException(status_code=404, detail="Not found")
 
-    calendar = get_calendar_for_sources(feed.sources)
+    try:
+        calendar = get_calendar_for_sources(feed.sources)
+    except requests.RequestException:
+        raise HTTPException(status_code=502, detail="Failed to fetch upstream calendar")
     filtered_calendar = filter_all_day_events(calendar)
 
     return Response(content=filtered_calendar.to_ical(), media_type="text/calendar")
