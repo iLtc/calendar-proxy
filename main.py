@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException, Response
 
 from config import load_feeds, get_feed_by_token
 from calendar_service import get_calendar_for_sources
-from filters import filter_all_day_events, filter_time_window
+from filters import filter_all_day_events, filter_time_window, version_event_uids
 
 load_dotenv()
 
@@ -39,6 +39,6 @@ def get_feed_ics(feed_name: str, token: str):
         calendar = get_calendar_for_sources(feed.sources)
     except requests.RequestException:
         raise HTTPException(status_code=502, detail="Failed to fetch upstream calendar")
-    filtered_calendar = filter_all_day_events(filter_time_window(calendar))
+    filtered_calendar = version_event_uids(filter_all_day_events(filter_time_window(calendar)))
 
     return Response(content=filtered_calendar.to_ical(), media_type="text/calendar")
